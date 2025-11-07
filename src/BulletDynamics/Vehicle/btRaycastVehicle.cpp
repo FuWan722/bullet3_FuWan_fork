@@ -385,7 +385,7 @@ void btRaycastVehicle::updateSuspension(btScalar deltaTime)
 {
 	(void)deltaTime;
 
-	btScalar chassisMass = btScalar(1.) / m_chassisBody->getInvMass();
+	// btScalar chassisMass = btScalar(1.) / m_chassisBody->getInvMass();
 
 	for (int w_it = 0; w_it < getNumWheels(); w_it++)
 	{
@@ -400,7 +400,7 @@ void btRaycastVehicle::updateSuspension(btScalar deltaTime)
 				btScalar current_length = wheel_info.m_raycastInfo.m_suspensionLength;
 
 				btScalar length_diff = (susp_length - current_length);
-
+				//Assume stiffness is in N/m, use Hooke's Law: F(N) = stiffness(N/m) * offset(m)
 				force = wheel_info.m_suspensionStiffness * length_diff * wheel_info.m_clippedInvContactDotSuspension;
 			}
 
@@ -417,12 +417,13 @@ void btRaycastVehicle::updateSuspension(btScalar deltaTime)
 					{
 						susp_damping = wheel_info.m_wheelsDampingRelaxation;
 					}
+					//Assume damping is in N/m/s, use Hooke's Law: F(N) = damping(N/m/s) * vel(m/s)
 					force -= susp_damping * projected_rel_vel;
 				}
 			}
 
 			// RESULT
-			wheel_info.m_wheelsSuspensionForce = force * chassisMass;
+			wheel_info.m_wheelsSuspensionForce = force;
 			if (wheel_info.m_wheelsSuspensionForce < btScalar(0.))
 			{
 				wheel_info.m_wheelsSuspensionForce = btScalar(0.);
